@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from '@mui/material';
+import { colors } from './styles/colorPalette';
+
 import TopPerformers from './components/TopPerformers';
 import Projects from './components/Projects';
 import Users from './components/Users';
 import Login from './components/Login';
+
 import './App.css'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
 
   useEffect(() => {
-    // Verificar si el token existe en localStorage
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('access_token');
     if (token) {
       setIsAuthenticated(true);
     } else {
@@ -19,11 +23,11 @@ function App() {
   }, []);
 
   const handleLoginSuccess = () => {
-    setIsAuthenticated(true); // Actualiza el estado después de un login exitoso
+    setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
-    // Eliminar el token de localStorage para hacer logout
+    
     localStorage.removeItem('accessToken');
     setIsAuthenticated(false);
   };
@@ -32,11 +36,19 @@ function App() {
     <>
       {isAuthenticated ? (
         <>
-          <button onClick={handleLogout}>Logout</button>
-          {/* Contenido de la app solo visible si está autenticado */}
-          <Projects />
+          <Button
+            variant="contained"
+            onClick={handleLogout}
+            sx={{
+              bgcolor: colors.accent,
+              color: colors.primary,
+              fontWeight: "bold",
+            }}
+          >Logout</Button>
+          
+          <Projects onSelectProject={setSelectedProjectId}/>
           <Users />
-          <TopPerformers />
+          {selectedProjectId && <TopPerformers projectId={selectedProjectId}/>}
         </>
       ) : (
         <Login onLoginSuccess={handleLoginSuccess} />
